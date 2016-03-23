@@ -1,4 +1,5 @@
 local player_name = {}
+local sound = "no"
 
 local mysounds = { -- block name, sound
 	{"months","mymonths_thunder"}
@@ -84,12 +85,16 @@ minetest.register_chatcommand("hidesoundblock", {
 	end
 })
 local play_sound = function()
+			if sound == "no" then
+				return
+			else
 					minetest.sound_play(sound, {
 						max_hear_distance = 10,
 						to_player = player,
 						gain = 1.0,
 					})
-		end
+			end
+	end
 
 minetest.register_abm({
 	nodenames = {"mysoundblocks:block_hidden_"..sname},
@@ -104,6 +109,7 @@ minetest.register_abm({
 			local pf = function()
 			local n = minetest.find_node_near(pos, 5,"mysoundblocks:block_hidden_"..sname)
 					player_name[p] = false
+					sound = "yes"
 					end
 				if player_name[p] == nil then
 					player_name[p] = true
