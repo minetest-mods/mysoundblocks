@@ -2,14 +2,15 @@ local player_name = {}
 local sound = "no"
 
 local mysounds = { -- block name, sound
-	{"months","mymonths_thunder"}
+	{"months", "Months", "mymonths_thunder"}
 	}
 for i in ipairs (mysounds) do
 	local sname = mysounds[i][1]
-	local sound = mysounds[i][2]
+	local desc = mysounds[i][2]
+	local sound = mysounds[i][3]
 
 minetest.register_node("mysoundblocks:block_visable_"..sname, {
-	description = "Sound Block",
+	description = "Sound Block - "..desc,
 	drawtype = "normal",
 	tiles = {
 		"mysoundblocks_block.png",
@@ -17,6 +18,7 @@ minetest.register_node("mysoundblocks:block_visable_"..sname, {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {oddly_breakable_by_hand = 1,not_in_creative_inventory=0},
+	
 	on_dig = function(pos, node, player)
 		if minetest.get_player_privs(player:get_player_name()).mysoundblocks ~= true then
 			minetest.chat_send_player(player:get_player_name(), "You need the mysoundblocks priv")
@@ -31,7 +33,7 @@ minetest.register_node("mysoundblocks:block_visable_"..sname, {
 
 
 minetest.register_node("mysoundblocks:block_hidden_"..sname, {
-	description = "Hidden Sound Block",
+	description = "Sound Block - "..desc,
 	tiles = {
 		"mysoundblocks_block.png"
 	},
