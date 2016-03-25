@@ -29,11 +29,12 @@ minetest.register_node("mysoundblocks:block", {
 
 		local node = minetest.get_node(pos)
 		local meta = minetest.get_meta(pos)
+
 		minetest.show_formspec(player:get_player_name(),"fs",
 				"size[6,6;]"..
 				"field[1,1;4.5,1;snd;Enter Sound Name;]"..
 				"field[1,2.5;2,1;sndl;Length;]"..
-				"field[3.5,2.5;2,1;sndhd;Hear distance;]"..
+				"field[3.5,2.5;2,1;sndhd;Sound distance;]"..
 				"button_exit[1,5;4,1;ent;Set Block]")
 
 		minetest.register_on_player_receive_fields(function(player, formname, fields)
