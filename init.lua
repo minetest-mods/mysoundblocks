@@ -66,9 +66,7 @@ end
 
 })
 
-
 minetest.register_node("mysoundblocks:block_hidden", {
-	--description = "Sound Block",
 	tiles = {
 		"mysoundblocks_hidden.png"
 	},
@@ -77,12 +75,6 @@ minetest.register_node("mysoundblocks:block_hidden", {
 	walkable = false,
 	pointable = false,
 	group = {not_in_creative_inventory = 1},
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, -0.5, -0.5, 0.5, -0.4375, 0.5},
-		}
-	},
 })
 
 minetest.register_privilege("mysoundblocks", "Lets you place and dig soundblocks")
@@ -101,12 +93,14 @@ minetest.register_chatcommand("showsb", {
 		end
 
 		local pos = player:getpos()
+			pos.y = pos.y + 1
 		local npos = minetest.find_node_near(pos, 5, "mysoundblocks:block_hidden")
 		local node = minetest.get_node(npos).name
+		local n = minetest.get_node(pos).name
 
-		if pos and npos and node then
-			minetest.swap_node(npos,{name = "mysoundblocks:block"})
-		end
+			if pos and npos and node then
+				minetest.swap_node(npos,{name = "mysoundblocks:block"})
+			end
 
 	end
 })
@@ -125,6 +119,7 @@ minetest.register_chatcommand("hidesb", {
 		end
 
 		local pos = player:getpos()
+			pos.y = pos.y + 1
 		local npos = minetest.find_node_near(pos, 5,"mysoundblocks:block")
 		local node = minetest.get_node(npos).name
 
