@@ -1,7 +1,7 @@
 local block_sounds = {}
 local player_name = {}
 
-minetest.register_node("mysoundblocks:block_visable", {
+minetest.register_node("mysoundblocks:block", {
 	description = "Sound Block",
 	drawtype = "normal",
 	tiles = {"mysoundblocks_block.png"},
@@ -32,7 +32,8 @@ minetest.register_node("mysoundblocks:block_visable", {
 		minetest.show_formspec(player:get_player_name(),"fs",
 				"size[6,6;]"..
 				"field[1,1;4.5,1;snd;Enter Sound Name;]"..
-				"field[1,2.5;4.5,1;sndl;Enter lenght of sound;]"..
+				"field[1,2.5;2,1;sndl;Length;]"..
+				"field[3.5,2.5;2,1;sndhd;Hear distance;]"..
 				"button_exit[1,5;4,1;ent;Set Block]")
 
 		minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -40,14 +41,16 @@ minetest.register_node("mysoundblocks:block_visable", {
 		local inv = meta:get_inventory()
 		local thing1 = fields["snd"]
 		local thing2 = fields["sndl"]
+		local thing3 = fields["sndhd"]
 
 			if fields["ent"] and
 				fields["snd"] and
-				fields["sndl"] then
+				fields["sndl"] and
+				fields["sndhd"] then
 				if fields["ent"] then
 					meta:set_string("a",thing1)
 					meta:set_string("b",thing2)
-					meta:set_string("infotext",thing1)
+					meta:set_string("c",thing3)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 
 				end
@@ -55,7 +58,7 @@ minetest.register_node("mysoundblocks:block_visable", {
 				return
 			end
 			
-			end)
+		end)
 
 
 end
@@ -83,7 +86,7 @@ minetest.register_node("mysoundblocks:block_hidden", {
 
 minetest.register_privilege("mysoundblocks", "Lets you place and dig soundblocks")
 
-minetest.register_chatcommand("ssb", {
+minetest.register_chatcommand("showsb", {
 	params = "",
 	description = "Show the sound block",
 	privs={mysoundblocks = true},
@@ -101,13 +104,13 @@ minetest.register_chatcommand("ssb", {
 		local node = minetest.get_node(npos).name
 
 		if pos and npos and node then
-			minetest.swap_node(npos,{name = "mysoundblocks:block_visable"})
+			minetest.swap_node(npos,{name = "mysoundblocks:block"})
 		end
 
 	end
 })
 
-minetest.register_chatcommand("hsb", {
+minetest.register_chatcommand("hidesb", {
 	params = "",
 	description = "Hide the sound block",
 	privs = {mysoundblocks = true},
@@ -121,7 +124,7 @@ minetest.register_chatcommand("hsb", {
 		end
 
 		local pos = player:getpos()
-		local npos = minetest.find_node_near(pos, 5,"mysoundblocks:block_visable")
+		local npos = minetest.find_node_near(pos, 5,"mysoundblocks:block")
 		local node = minetest.get_node(npos).name
 
 		if pos and npos and node then
@@ -143,6 +146,7 @@ minetest.register_abm({
 
 			if block_sound == nil or
 				block_sound == "" then
+				minetest.swap_node(pos,{name = "mysoundblocks:block"})
 				return
 			end
 
@@ -152,7 +156,13 @@ minetest.register_abm({
 				block_time = 5
 			end
 
-		local all_objects = minetest.get_objects_inside_radius(pos, 3)
+		local rad_dist = tonumber(meta:get_string("c"))
+
+			if rad_dist == nil then
+				rad_dist = 3
+			end
+
+		local all_objects = minetest.get_objects_inside_radius(pos, rad_dist)
 		local p
 
 		for _,obj in ipairs(all_objects) do
