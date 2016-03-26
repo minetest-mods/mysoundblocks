@@ -231,7 +231,7 @@ minetest.register_abm({
 							minetest.sound_play(block_sound, {
 								max_hear_distance = 10,
 								to_player = p,
-								gain = 99,
+								gain = 1,
 							})
 						else
 							minetest.swap_node(pos,{name = "mysoundblocks:block"})
