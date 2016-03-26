@@ -46,13 +46,17 @@ minetest.register_node("mysoundblocks:block", {
 
 		local node = minetest.get_node(pos)
 		local meta = minetest.get_meta(pos)
+		local aa = meta:get_string("a")
+		local bb = tonumber(meta:get_string("b"))
+		local cc = tonumber(meta:get_string("c"))
+		local dd = meta:get_string("d")
 
 		minetest.show_formspec(player:get_player_name(),"fs",
 				"size[6,6;]"..
-				"field[1,1;4.5,1;snd;Enter Sound Name;]"..
-				"field[1,2;4.5,1;txt;Enter Chat Message;]"..
-				"field[1,3;2,1;sndl;Length;5]"..
-				"field[3.5,3;2,1;sndhd;Radius;3]"..
+				"field[1,1;4.5,1;snd;Enter Sound Name;"..aa.."]"..
+				"field[1,2;4.5,1;txt;Enter Chat Message;"..dd.."]"..
+				"field[1,3;2,1;sndl;Length;"..bb.."]"..
+				"field[3.5,3;2,1;sndhd;Radius;"..cc.."]"..
 				"button_exit[1,4;2,1;ents;Sound]"..
 				"button_exit[3,4;2,1;entc;Chat]"..
 				"button_exit[2,5;2,1;entb;Both]")
@@ -68,9 +72,12 @@ minetest.register_node("mysoundblocks:block", {
 
 			if fields["ents"] or
 				fields["entc"] or
-				fields["entb"] then
+				fields["entb"] or
+				fields["snd"] or
+				fields["txt"] then
 
-				if fields["ents"] then
+				if fields["ents"] and
+					fields["snd"] ~= "" then
 					thing5 = "sound"
 					meta:set_string("a",thing1)
 					meta:set_string("b",thing2)
@@ -78,7 +85,8 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("d",thing4)
 					meta:set_string("e",thing5)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
-				elseif fields["entc"] then
+				elseif fields["entc"] and
+					fields["txt"] ~= "" then
 					thing5 = "chat"
 					meta:set_string("a",thing1)
 					meta:set_string("b",thing2)
@@ -86,7 +94,9 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("d",thing4)
 					meta:set_string("e",thing5)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
-				elseif fields["entb"] then
+				elseif fields["entb"] and
+					fields["txt"] ~= "" and
+					fields["snd"] ~= "" then
 					thing5 = "both"
 					meta:set_string("a",thing1)
 					meta:set_string("b",thing2)
@@ -134,16 +144,15 @@ minetest.register_chatcommand("showsb", {
 		end
 
 		local pos = player:getpos()
-			pos.y = pos.y + 1
 
-		local npos = minetest.find_node_near(pos, 5,"mysoundblocks:block_hidden")
+		local a = minetest.find_nodes_in_area({x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
+				{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5}, {"mysoundblocks:block_hidden"})
 
+			for _, row in pairs(a) do
+				npos = row
 				minetest.swap_node(npos,{name = "mysoundblocks:block"})
+			end
 
---[[
-local a = minetest.find_nodes_in_area({x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
-		{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5}, {"mysoundblock:block"})
---]]
 	end
 })
 
@@ -163,17 +172,20 @@ minetest.register_chatcommand("hidesb", {
 		local pos = player:getpos()
 			pos.y = pos.y + 1
 
-		local npos = minetest.find_node_near(pos, 5,"mysoundblocks:block")
+		local a = minetest.find_nodes_in_area({x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
+				{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5}, {"mysoundblocks:block"})
 
-		if pos and npos then
-			minetest.swap_node(npos,{name = "mysoundblocks:block_hidden"})
-		end
+			for _, row in pairs(a) do
+				npos = row
+				minetest.swap_node(npos,{name = "mysoundblocks:block_hidden"})
+			end
+
 	end
 })
 
 minetest.register_abm({
 	nodenames = {"mysoundblocks:block_hidden"},
-	interval = 0.2, -- abm's start from 1 second and above
+	interval = 1,
 	chance = 1,
 	catch_up = false,
 
@@ -243,8 +255,8 @@ minetest.register_abm({
 
 					end
 
-					minetest.after(block_time, function(p) -- time before player can hear the sound again
-						player_name[p] = nil -- reset player
+					minetest.after(block_time, function(p)
+						player_name[p] = nil
 					end, p)
 
 				end
