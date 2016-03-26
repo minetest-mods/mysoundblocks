@@ -48,7 +48,9 @@ minetest.register_node("mysoundblocks:block", {
 		local meta = minetest.get_meta(pos)
 		local aa = meta:get_string("a")
 		local bb = tonumber(meta:get_string("b"))
+				if bb == nil then bb = 5 end
 		local cc = tonumber(meta:get_string("c"))
+				if cc == nil then cc = 3 end
 		local dd = meta:get_string("d")
 
 		minetest.show_formspec(player:get_player_name(),"fs",
@@ -219,13 +221,17 @@ minetest.register_abm({
 				if not player_name[p] then
 
 					player_name[p] = true
-					
+
+		local handler = minetest.sound_play(block_sound, {to_player = p, gain = 1})
+
+
 					if sound_chat == "sound" then
 						if block_sound then
+							minetest.sound_stop(handler)
 							minetest.sound_play(block_sound, {
 								max_hear_distance = 10,
 								to_player = p,
-								gain = 1.0,
+								gain = 99,
 							})
 						else
 							minetest.swap_node(pos,{name = "mysoundblocks:block"})
@@ -242,6 +248,7 @@ minetest.register_abm({
 
 					elseif sound_chat == "both" then
 						if block_sound and block_text then
+							minetest.sound_stop(handler)
 							minetest.sound_play(block_sound, {
 								max_hear_distance = 10,
 								to_player = p,
@@ -264,4 +271,6 @@ minetest.register_abm({
 		end
 	end
 })
+--local handler = minetest.sound_play(sound, {to_player = player_name, gain = gain})
+--minetest.sound_stop(handler)
 
