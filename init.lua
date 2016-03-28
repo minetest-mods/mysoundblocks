@@ -52,16 +52,22 @@ minetest.register_node("mysoundblocks:block", {
 		local cc = tonumber(meta:get_string("c"))
 				if cc == nil then cc = 3 end
 		local dd = meta:get_string("d")
+		local ee = tonumber(meta:get_string("e"))
+				if ee == nil then ee = 10 end
 
 		minetest.show_formspec(player:get_player_name(),"fs",
-				"size[6,6;]"..
+				"size[6,7;]"..
+				"background[-0.5,-0.5;7,8;mysoundblocks_bg.png]"..
 				"field[1,1;4.5,1;snd;Enter Sound Name;"..aa.."]"..
 				"field[1,2;4.5,1;txt;Enter Chat Message;"..dd.."]"..
 				"field[1,3;2,1;sndl;Length;"..bb.."]"..
 				"field[3.5,3;2,1;sndhd;Radius;"..cc.."]"..
-				"button_exit[1,4;2,1;ents;Sound]"..
-				"button_exit[3,4;2,1;entc;Chat]"..
-				"button_exit[2,5;2,1;entb;Both]")
+				"label[0.7,3.4;Player or All]"..
+				"dropdown[0.7,3.8;2,1;pora;Player,All;]"..
+				"field[3.5,4;2,1;snddis;Hear Distance;"..ee.."]"..
+				"button_exit[1,5;2,1;ents;Sound]"..
+				"button_exit[3,5;2,1;entc;Chat]"..
+				"button_exit[2,6;2,1;entb;Both]")
 
 		minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local meta = minetest.get_meta(pos)
@@ -71,6 +77,8 @@ minetest.register_node("mysoundblocks:block", {
 		local thing3 = fields["sndhd"]
 		local thing4 = fields["txt"]
 		local thing5 = ""
+		local thing6 = fields["pora"]
+		local thing7 = fields["snddis"]
 
 			if fields["ents"] or
 				fields["entc"] or
@@ -86,6 +94,8 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("c",thing3)
 					meta:set_string("d",thing4)
 					meta:set_string("e",thing5)
+					meta:set_string("f",thing6)
+					meta:set_string("g",thing7)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 				elseif fields["entc"] and
 					fields["txt"] ~= "" then
@@ -105,6 +115,8 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("c",thing3)
 					meta:set_string("d",thing4)
 					meta:set_string("e",thing5)
+					meta:set_string("f",thing6)
+					meta:set_string("g",thing7)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 				end
 
@@ -200,6 +212,8 @@ minetest.register_abm({
 		local rad_dist = tonumber(meta:get_string("c"))
 		local block_text = meta:get_string("d")
 		local sound_chat = meta:get_string("e")
+		local sound_pa = meta:get_string("f")
+		local sound_dis = meta:get_string("g")
 
 			if block_time == nil then
 				block_time = 5
@@ -223,14 +237,18 @@ minetest.register_abm({
 					player_name[p] = true
 
 		local handler = minetest.sound_play(block_sound, {to_player = p, gain = 1})
+		local sound_to = p
+				if sound_pa == "All" then
+					sound_to = all
+				end
 
 
 					if sound_chat == "sound" then
 						if block_sound then
 							minetest.sound_stop(handler)
 							minetest.sound_play(block_sound, {
-								max_hear_distance = 10,
-								to_player = p,
+								max_hear_distance = sound_dis,
+								to_player = sound_to,
 								gain = 1,
 							})
 						else
@@ -271,6 +289,4 @@ minetest.register_abm({
 		end
 	end
 })
---local handler = minetest.sound_play(sound, {to_player = player_name, gain = gain})
---minetest.sound_stop(handler)
 
