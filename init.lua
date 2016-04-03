@@ -129,7 +129,7 @@ minetest.register_node("mysoundblocks:block", {
 			else
 				return
 			end
-			
+		return true
 		end)
 
 
