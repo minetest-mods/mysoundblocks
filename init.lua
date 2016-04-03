@@ -102,6 +102,7 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("g",thing7)
 					meta:set_string("h",thing8)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
+					return true
 				elseif fields["entc"] and
 					fields["txt"] ~= "" then
 					thing5 = "chat"
@@ -111,6 +112,7 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("d",thing4)
 					meta:set_string("e",thing5)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
+					return true
 				elseif fields["entb"] and
 					fields["txt"] ~= "" and
 					fields["snd"] ~= "" then
@@ -124,12 +126,12 @@ minetest.register_node("mysoundblocks:block", {
 					meta:set_string("g",thing7)
 					meta:set_string("h",thing8)
 					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
+					return true
 				end
 
 			else
 				return
 			end
-		return true
 		end)
 
 
@@ -205,7 +207,7 @@ minetest.register_chatcommand("hidesb", {
 
 minetest.register_abm({
 	nodenames = {"mysoundblocks:block_hidden"},
-	interval = 1,
+	interval = 0.2,
 	chance = 1,
 	catch_up = false,
 
