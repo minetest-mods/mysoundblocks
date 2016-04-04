@@ -269,8 +269,7 @@ end
 
 -- play sound
 if (sound_chat == "sound" or sound_chat == "both")
-and block_sound
-and sound_pa ~= "All" then
+and block_sound then
 
 	-- stop any sounds still playing
 	if handler[p] then
@@ -278,12 +277,15 @@ and sound_pa ~= "All" then
 		--print ("handler stopped for " .. p)
 	end
 
-	-- only player hears this sound
-	handler[p] = minetest.sound_play(block_sound, {
-		max_hear_distance = sound_dis,
-		to_player = p,
-		gain = sound_gain,
-	})
+	if sound_pa ~= "All" then
+
+		-- only player hears this sound
+		handler[p] = minetest.sound_play(block_sound, {
+			max_hear_distance = sound_dis,
+			to_player = p,
+			gain = sound_gain,
+		})
+	end
 
 end
 
