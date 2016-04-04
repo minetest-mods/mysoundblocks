@@ -1,6 +1,5 @@
 local block_sounds = {}
 local player_name = {}
-local handler = {}
 
 minetest.register_node("mysoundblocks:block", {
 	description = "Sound Block",
@@ -48,11 +47,15 @@ minetest.register_node("mysoundblocks:block", {
 		local node = minetest.get_node(pos)
 		local meta = minetest.get_meta(pos)
 		local aa = meta:get_string("a")
-		local bb = tonumber(meta:get_string("b")) or 5
-		local cc = tonumber(meta:get_string("c")) or 3
+		local bb = tonumber(meta:get_string("b"))
+				if bb == nil then bb = 5 end
+		local cc = tonumber(meta:get_string("c"))
+				if cc == nil then cc = 3 end
 		local dd = meta:get_string("d")
-		local ee = tonumber(meta:get_string("e")) or 10
-		local ff = tonumber(meta:get_string("e")) or 1
+		local ee = tonumber(meta:get_string("e"))
+				if ee == nil then ee = 10 end
+		local ff = tonumber(meta:get_string("e"))
+				if ff == nil then ff = 1 end
 
 		minetest.show_formspec(player:get_player_name(),"fs",
 				"size[6,7;]"..
@@ -70,68 +73,59 @@ minetest.register_node("mysoundblocks:block", {
 				"button_exit[3.75,5.75;1.5,1;entb;Both]")
 
 		minetest.register_on_player_receive_fields(function(player, formname, fields)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		local thing1 = fields["snd"]
+		local thing2 = fields["sndl"]
+		local thing3 = fields["sndhd"]
+		local thing4 = fields["txt"]
+		local thing5 = ""
+		local thing6 = fields["pora"]
+		local thing7 = fields["snddis"]
+		local thing8 = fields["sndgn"]
 
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			local thing1 = fields["snd"]
-			local thing2 = fields["sndl"]
-			local thing3 = fields["sndhd"]
-			local thing4 = fields["txt"]
-			local thing5 = ""
-			local thing6 = fields["pora"]
-			local thing7 = fields["snddis"]
-			local thing8 = fields["sndgn"]
+			if fields["ents"] or
+				fields["entc"] or
+				fields["entb"] or
+				fields["snd"] or
+				fields["txt"] then
 
-			if fields["ents"]
-			or fields["entc"]
-			or fields["entb"]
-			or fields["snd"]
-			or fields["txt"] then
-
-				if fields["ents"]
-				and fields["snd"] ~= "" then
-
-					meta:set_string("a", thing1)
-					meta:set_string("b", thing2)
-					meta:set_string("c", thing3)
-					meta:set_string("d", thing4)
-					meta:set_string("e", "sound")
-					meta:set_string("f", thing6)
-					meta:set_string("g", thing7)
-					meta:set_string("h", thing8)
-
-					minetest.swap_node(pos, {name = "mysoundblocks:block_hidden"})
-
+				if fields["ents"] and
+					fields["snd"] ~= "" then
+					thing5 = "sound"
+					meta:set_string("a",thing1)
+					meta:set_string("b",thing2)
+					meta:set_string("c",thing3)
+					meta:set_string("d",thing4)
+					meta:set_string("e",thing5)
+					meta:set_string("f",thing6)
+					meta:set_string("g",thing7)
+					meta:set_string("h",thing8)
+					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 					return true
-
-				elseif fields["entc"]
-				and fields["txt"] ~= "" then
-
-					meta:set_string("a", thing1)
-					meta:set_string("b", thing2)
-					meta:set_string("c", thing3)
-					meta:set_string("d", thing4)
-					meta:set_string("e", "chat")
-
-					minetest.swap_node(pos, {name = "mysoundblocks:block_hidden"})
-
+				elseif fields["entc"] and
+					fields["txt"] ~= "" then
+					thing5 = "chat"
+					meta:set_string("a",thing1)
+					meta:set_string("b",thing2)
+					meta:set_string("c",thing3)
+					meta:set_string("d",thing4)
+					meta:set_string("e",thing5)
+					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 					return true
-
-				elseif fields["entb"]
-				and fields["txt"] ~= ""
-				and fields["snd"] ~= "" then
-
-					meta:set_string("a", thing1)
-					meta:set_string("b", thing2)
-					meta:set_string("c", thing3)
-					meta:set_string("d", thing4)
-					meta:set_string("e", "both")
-					meta:set_string("f", thing6)
-					meta:set_string("g", thing7)
-					meta:set_string("h", thing8)
-
-					minetest.swap_node(pos, {name = "mysoundblocks:block_hidden"})
-
+				elseif fields["entb"] and
+					fields["txt"] ~= "" and
+					fields["snd"] ~= "" then
+					thing5 = "both"
+					meta:set_string("a",thing1)
+					meta:set_string("b",thing2)
+					meta:set_string("c",thing3)
+					meta:set_string("d",thing4)
+					meta:set_string("e",thing5)
+					meta:set_string("f",thing6)
+					meta:set_string("g",thing7)
+					meta:set_string("h",thing8)
+					minetest.swap_node(pos,{name = "mysoundblocks:block_hidden"})
 					return true
 				end
 
@@ -140,12 +134,15 @@ minetest.register_node("mysoundblocks:block", {
 			end
 		end)
 
+
 end
 
 })
 
 minetest.register_node("mysoundblocks:block_hidden", {
-	tiles = {"mysoundblocks_hidden.png"},
+	tiles = {
+		"mysoundblocks_hidden.png"
+	},
 	drawtype = "nodebox",
 	paramtype = "light",
 	walkable = false,
@@ -170,13 +167,12 @@ minetest.register_chatcommand("showsb", {
 
 		local pos = player:getpos()
 
-		local a = minetest.find_nodes_in_area(
-			{x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
-			{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5},
-			{"mysoundblocks:block_hidden"})
+		local a = minetest.find_nodes_in_area({x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
+				{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5}, {"mysoundblocks:block_hidden"})
 
 			for _, row in pairs(a) do
-				minetest.swap_node(row, {name = "mysoundblocks:block"})
+				npos = row
+				minetest.swap_node(npos,{name = "mysoundblocks:block"})
 			end
 
 	end
@@ -198,13 +194,12 @@ minetest.register_chatcommand("hidesb", {
 		local pos = player:getpos()
 			pos.y = pos.y + 1
 
-		local a = minetest.find_nodes_in_area(
-			{x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
-			{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5},
-			{"mysoundblocks:block"})
+		local a = minetest.find_nodes_in_area({x = pos.x - 5, y = pos.y - 5, z = pos.z - 5},
+				{x = pos.x + 5, y = pos.y + 5, z = pos.z + 5}, {"mysoundblocks:block"})
 
 			for _, row in pairs(a) do
-				minetest.swap_node(row, {name = "mysoundblocks:block_hidden"})
+				npos = row
+				minetest.swap_node(npos,{name = "mysoundblocks:block_hidden"})
 			end
 
 	end
@@ -216,7 +211,7 @@ minetest.register_abm({
 	chance = 1,
 	catch_up = false,
 
-	action = function(pos, node)
+	action = function(pos, node, active_object_count, active_object_count_wider)
 
 		local meta = minetest.get_meta(pos)
 
@@ -229,14 +224,16 @@ minetest.register_abm({
 		local sound_dis = meta:get_string("g")
 		local sound_gain = meta:get_string("h")
 
-		-- if block_time is nil then it uses default of 5
-		block_time = block_time or 5
+			if block_time == nil then
+				block_time = 5
+			end
 
-		rad_dist = rad_dist or 3
+			if rad_dist == nil then
+				rad_dist = 3
+			end
 
 		local all_objects = minetest.get_objects_inside_radius(pos, rad_dist)
 		local p
-		local glob = nil
 
 		for _,obj in ipairs(all_objects) do
 
@@ -248,44 +245,49 @@ minetest.register_abm({
 
 					player_name[p] = true
 
--- play sound for everyone to hear
-if sound_pa == "All"
-and glob == nil then
+		local handler = minetest.sound_play(block_sound, {to_player = p, gain = sound_gain})
+		local sound_to = p
+				if sound_pa == "All" then
+					sound_to = all
+				end
 
-	minetest.sound_play(block_sound, {
-		gain = sound_gain,
-	})
 
-	-- changes to true so global sound plays only once for ALL players
-	glob = true
-end
+					if sound_chat == "sound" then
+						if block_sound then
+							minetest.sound_stop(handler)
+							minetest.sound_play(block_sound, {
+								max_hear_distance = sound_dis,
+								to_player = sound_to,
+								gain = sound_gain,
+							})
+						else
+							minetest.swap_node(pos,{name = "mysoundblocks:block"})
+							return
+						end
 
--- display text
-if (sound_chat == "chat" or sound_chat == "both")
-and block_text then
+					elseif sound_chat == "chat" then
+						if block_text then
+							minetest.chat_send_player(p,block_text)
+						else
+							minetest.swap_node(pos,{name = "mysoundblocks:block"})
+							return
+						end
 
-	minetest.chat_send_player(p, block_text)
-end
+					elseif sound_chat == "both" then
+						if block_sound and block_text then
+							minetest.sound_stop(handler)
+							minetest.sound_play(block_sound, {
+								max_hear_distance = sound_dis,
+								to_player = sound_to,
+								gain = sound_gain,
+								})
+							minetest.chat_send_player(p,block_text)
+						else
+							minetest.swap_node(pos,{name = "mysoundblocks:block"})
+							return
+						end
 
--- play sound
-if (sound_chat == "sound" or sound_chat == "both")
-and block_sound
-and sound_pa ~= "All" then
-
-	-- stop any sounds still playing
-	if handler[p] then
-		minetest.sound_stop(handler[p])
-		--print ("handler stopped for " .. p)
-	end
-
-	-- only player hears this sound
-	handler[p] = minetest.sound_play(block_sound, {
-		max_hear_distance = sound_dis,
-		to_player = p,
-		gain = sound_gain,
-	})
-
-end
+					end
 
 					minetest.after(block_time, function(p)
 						player_name[p] = nil
