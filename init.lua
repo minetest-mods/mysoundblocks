@@ -277,15 +277,12 @@ and block_sound then
 		--print ("handler stopped for " .. p)
 	end
 
-	if sound_pa ~= "All" then
-
-		-- only player hears this sound
-		handler[p] = minetest.sound_play(block_sound, {
-			max_hear_distance = sound_dis,
-			to_player = p,
-			gain = sound_gain,
-		})
-	end
+	-- only player hears this sound
+	handler[p] = minetest.sound_play(block_sound, {
+		max_hear_distance = sound_dis,
+		to_player = p,
+		gain = sound_gain,
+	})
 
 end
 

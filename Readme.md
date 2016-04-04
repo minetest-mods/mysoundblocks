@@ -40,3 +40,5 @@ Chat Commands
 
 Licence - DWYWPL
 
+Mod by Tenplus1 and Don
+
