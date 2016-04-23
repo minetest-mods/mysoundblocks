@@ -2,6 +2,7 @@ local block_sounds = {}
 local player_name = {}
 local handler = {}
 local sound = {}
+local chats = {}
 
 minetest.register_node("mysoundblocks:block", {
 	description = "Sound Block",
@@ -264,9 +265,11 @@ end
 
 -- display text
 if (sound_chat == "chat" or sound_chat == "both")
-and block_text then
+and block_text 
+and block_text ~= chats[p] then
 
 	minetest.chat_send_player(p, block_text)
+	chats[p] = block_text
 end
 
 -- play sound
