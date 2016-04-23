@@ -1,6 +1,7 @@
 local block_sounds = {}
 local player_name = {}
 local handler = {}
+local sound = {}
 
 minetest.register_node("mysoundblocks:block", {
 	description = "Sound Block",
@@ -52,7 +53,7 @@ minetest.register_node("mysoundblocks:block", {
 		local cc = tonumber(meta:get_string("c")) or 3
 		local dd = meta:get_string("d")
 		local ee = tonumber(meta:get_string("e")) or 10
-		local ff = tonumber(meta:get_string("h")) or 1
+		local ff = tonumber(meta:get_string("e")) or 1
 
 		minetest.show_formspec(player:get_player_name(),"fs",
 				"size[6,7;]"..
@@ -64,8 +65,7 @@ minetest.register_node("mysoundblocks:block", {
 				"label[0.7,3.4;Player or All]"..
 				"dropdown[0.7,3.8;2,1;pora;Player,All;]"..
 				"field[3.5,4;2,1;snddis;Hear Distance;"..ee.."]"..
-				"field[1.75,5;1,1;sndgn;Gain;"..ff.."]"..
-				"dropdown[3.7,4.4;2,1;vorh;Hidden,Visable;]"..
+				"field[2.75,5;1,1;sndgn;Gain;"..ff.."]"..
 				"button_exit[0.75,5.75;1.5,1;ents;Sound]"..
 				"button_exit[2.25,5.75;1.5,1;entc;Chat]"..
 				"button_exit[3.75,5.75;1.5,1;entb;Both]")
@@ -247,15 +247,9 @@ minetest.register_abm({
 
 				if not player_name[p] then
 
-
 					player_name[p] = block_sound
-					
-					if player_name[p] ~= handler[p] then player_name[p] = nil end
-					if handler[p] ~= player_name[p] then
-						--minetest.chat_send_all(player_name[p].." and "..block_sound.." and "..handler[p])
-						player_name[p] = nil
-					end
-					
+					if player_name[p] ~= blockname then player_name[p] = nil end
+
 -- play sound for everyone to hear
 if sound_pa == "All"
 and glob == nil then
@@ -280,17 +274,19 @@ if (sound_chat == "sound" or sound_chat == "both")
 and block_sound then
 
 	-- stop any sounds still playing
-	if handler[p] then
+	if handler[p] and block_sound ~= sound[p] then
 		minetest.sound_stop(handler[p])
-		--print ("handler stopped for " .. p)
+		if player_name[p] then minetest.chat_send_all(player_name[p].." and "..block_sound) end
 	end
 
 	-- only player hears this sound
+	if handler[p] and block_sound == sound[p] then return end
 	handler[p] = minetest.sound_play(block_sound, {
 		max_hear_distance = sound_dis,
 		to_player = p,
 		gain = sound_gain,
 	})
+	sound[p] = block_sound
 
 end
 
